@@ -1,7 +1,7 @@
 # ***************************************************************************
 # *   Copyright (c) 2014 sliptonic <shopinthewoods@gmail.com>               *
 # *   Copyright (c) 2021 shadowbane1000 <tyler@colberts.us>                 *
-# *   Copyright (c) 2024 Marc Heinig <Marc_Heinig@gmx.de>                   *
+# *   Copyright (c) 2024 Marc Heinig <marc_h@gmx-topmail.de>                *
 # *                                                                         *
 # *   This file is part of the FreeCAD CAx development system.              *
 # *                                                                         *
@@ -90,7 +90,7 @@ TOOLTIP_ARGS = parser.format_help()
 # These globals set common customization preferences
 OUTPUT_COMMENTS = True
 OUTPUT_HEADER = True
-OUTPUT_LINE_NUMBERS = True
+OUTPUT_LINE_NUMBERS = False
 SHOW_EDITOR = True
 MODAL = True  # if true commands are suppressed if the same as previous line.
 USE_TLO = True  # if true G43 will be output following tool changes
@@ -274,15 +274,7 @@ def export(objectslist, filename, argstring):
     if OUTPUT_HEADER:
         gcode += "%\n"
         gcode += "O\n"
-        gcode += (
-            os.path.split(filename)[-1]
-            + " ("
-            + "FREECAD-FILENAME-GOES-HERE"
-            + ", "
-            + "JOB-NAME-GOES-HERE"
-            + ")\n"
-        )
-        gcode += "(" + filename.upper() + ",EXPORTED BY FREECAD!)\n"
+        gcode += "(EXPORTED BY FREECAD!)\n"
         gcode += "(POST PROCESSOR: " + MACHINE_NAME + ")\n"
         gcode += "(OUTPUT TIME: " + str(now).upper() + ")\n"
 
