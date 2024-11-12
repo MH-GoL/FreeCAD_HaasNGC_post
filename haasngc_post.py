@@ -461,30 +461,6 @@ def parse(pathobj):
 
         if "Adaptive" in pathobj.Name:
             adaptiveOp = True
-            if hasattr(pathobj, "ToolController"):
-                if (
-                    hasattr(pathobj.ToolController, "HorizRapid")
-                    and pathobj.ToolController.HorizRapid > 0
-                ):
-                    opHorizRapid = Units.Quantity(
-                        pathobj.ToolController.HorizRapid, FreeCAD.Units.Velocity
-                    )
-                else:
-                    FreeCAD.Console.PrintWarning(
-                        "Tool Controller Horizontal Rapid Values are unset" + "\n"
-                    )
-
-                if (
-                    hasattr(pathobj.ToolController, "VertRapid")
-                    and pathobj.ToolController.VertRapid > 0
-                ):
-                    opVertRapid = Units.Quantity(
-                        pathobj.ToolController.VertRapid, FreeCAD.Units.Velocity
-                    )
-                else:
-                    FreeCAD.Console.PrintWarning(
-                        "Tool Controller Vertical Rapid Values are unset" + "\n"
-                    )
 
         commands = PathUtils.getPathWithPlacement(pathobj).Commands
         for index, c in enumerate(commands):
@@ -496,12 +472,6 @@ def parse(pathobj):
             else:
                 nextcommand = commands[index + 1].Name
 
-            if adaptiveOp and c.Name in ["G0", "G00"]:
-                if opHorizRapid and opVertRapid:
-                    command = "G1"
-                else:
-                    outstring.append("(TOOL CONTROLLER RAPID VALUES ARE UNSET)" + "\n")
-
             # suppress moves in fixture selection
             if pathobj.Label == "Fixture":
                 if command == "G0":
@@ -509,19 +479,6 @@ def parse(pathobj):
 
             # if it's a tap, we rigid tap, so don't start the spindle yet...
             if command == "M03" or command == "M3":
-                for entry in dir(pathobj.Tool):
-                    print(entry)
-                print(pathobj.Name)
-                print(pathobj.Label)
-                print(pathobj.Tool.Name)
-                print(pathobj.Tool.FullName)
-                print(pathobj.Tool.File)
-                print(pathobj.Tool.Material)
-                print(pathobj.Path.toGCode())
-                for entry in dir(pathobj):
-                    print(entry)
-                print(dir(pathobj.PropertiesList))
-
                 if pathobj.Tool.ShapeName == "tap":
                     tapSpeed = int(pathobj.SpindleSpeed)
                     continue
@@ -657,25 +614,6 @@ def parse(pathobj):
                             outstring.append(
                                 param + format(float(pos.getValueAs(UNIT_FORMAT)), precision_string)
                             )
-
-            if adaptiveOp and c.Name in ["G0", "G00"]:
-                if opHorizRapid and opVertRapid:
-                    if "Z" not in c.Parameters:
-                        outstring.append(
-                            "F"
-                            + format(
-                                float(opHorizRapid.getValueAs(UNIT_SPEED_FORMAT)),
-                                precision_string,
-                            )
-                        )
-                    else:
-                        outstring.append(
-                            "F"
-                            + format(
-                                float(opVertRapid.getValueAs(UNIT_SPEED_FORMAT)),
-                                precision_string,
-                            )
-                        )
 
             # store the latest command
             lastcommand = command
