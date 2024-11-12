@@ -626,10 +626,12 @@ def parse(pathobj):
                 for line in TOOL_CHANGE.splitlines(True):
                     out += linenumber() + line
 
+                out += linenumber() + "M6 T" + str(int(c.Parameters["T"])) + "\n"
+
                 # add height offset
                 if USE_TLO:
-                    tool_height = "\n" + linenumber() + " G43 H" + str(int(c.Parameters["T"]))
-                    outstring.append(tool_height)
+                    out += linenumber() + "G43 H" + str(int(c.Parameters["T"])) + "\n"
+                continue
 
             if command == "message":
                 if OUTPUT_COMMENTS is False:
@@ -639,14 +641,14 @@ def parse(pathobj):
 
             # prepend a line number and append a newline
             if len(outstring) >= 1:
-                if OUTPUT_LINE_NUMBERS and not outstring[0][0] == "(": #No linenumber on Comments
+                if OUTPUT_LINE_NUMBERS and not outstring[0][0] == "(": #No line number on comments
                     outstring.insert(0, (linenumber()))
 
                 # append the line to the final output
                 for w in outstring:
                     out += w.upper() + COMMAND_SPACE
                 out = out.strip() + "\n"
-                out = out.replace("  ", " ") #TODO: BAD BAD Workaround for clean search for better way!
+                out = out.replace("  ", " ") #TODO: BAD BAD Workaround for clean double spaces, search for better way!
 
         return out
 
